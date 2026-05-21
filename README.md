@@ -1,59 +1,115 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Proposal Perusahaan - PT Karunia Mitra Bersama
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi berbasis Laravel untuk manajemen pengajuan proposal di PT Karunia Mitra Bersama. Proyek ini memfasilitasi pembuatan, peninjauan, dan penyetujuan proposal antara staff/finance dan manager.
 
-## About Laravel
+## Panduan Instalasi & Menjalankan Proyek
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Pastikan di lokal Anda sudah terinstall PHP (minimal versi 8.2), Composer, dan Node.js (untuk keperluan asset vite jika diperlukan), serta Database MySQL atau sejenisnya.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 1. Clone & Setup Awal
+Clone repositori ini atau masuk ke direktori proyek yang ada:
+```bash
+cd sistem_proposal_perusahaan
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Install dependensi PHP menggunakan Composer:
+```bash
+composer install
+```
 
-## Learning Laravel
+Install dependensi Node.js untuk frontend (opsional namun disarankan jika terdapat perubahan asset):
+```bash
+npm install
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 2. Konfigurasi Environment
+Duplikat file `.env.example` menjadi `.env`:
+```bash
+cp .env.example .env
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Buka file `.env` dan atur konfigurasi koneksi database Anda (biasanya `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
 
-## Laravel Sponsors
+### 3. Generate Key & Migrasi Database
+Generate APP_KEY Laravel:
+```bash
+php artisan key:generate
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Jalankan migrasi database beserta seeder-nya untuk memasukkan data-data bawaan seperti Role (Manager, Finance), Divisi, dan User dummy:
+```bash
+php artisan migrate --seed
+```
 
-### Premium Partners
+### 4. Menjalankan Server
+Untuk melihat aplikasi, jalankan server bawaan Laravel:
+```bash
+php artisan serve
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Jika Anda ingin mengkompilasi file statis (CSS/JS) secara langsung/hot-reload:
+```bash
+npm run dev
+```
 
-## Contributing
+Anda bisa mengakses aplikasi web melalui `http://localhost:8000`.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## Dokumentasi API (RESTful)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Proyek ini juga mengekspos endpoint API. Autentikasi API menggunakan Laravel Sanctum (Token-based Authentication). Sebagian besar rute membutuhkan `Authorization` header berupa Bearer token.
 
-## Security Vulnerabilities
+**Base URL**: `http://localhost:8000/api`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 1. Auth Endpoint
 
-## License
+#### Login
+Digunakan untuk mengautentikasi user dan mendapatkan akses token.
+- **Endpoint:** `POST /auth/login`
+- **Body Request:**
+  ```json
+  {
+      "email": "user@example.com",
+      "password": "password"
+  }
+  ```
+- **Response Sukses:** Akan mengembalikan informasi akun beserta Bearer Token yang dapat digunakan pada endpoint-endpoint lainnya.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+#### Mendapatkan Data User Login (Profile)
+- **Endpoint:** `GET /auth/me`
+- **Headers:** `Authorization: Bearer <token_anda>`
+- **Response:** Menampilkan data object user yang sedang login (termasuk relasi divisi).
+
+#### Logout
+Mencabut hak akses (menghapus) token saat ini yang digunakan.
+- **Endpoint:** `POST /auth/logout`
+- **Headers:** `Authorization: Bearer <token_anda>`
+- **Response:** Berhasil keluar.
+
+---
+
+### 2. Proposal Endpoint
+Semua endpoint di bawah ini membutuhkan login.
+
+- **Headers:** `Authorization: Bearer <token_anda>`
+
+#### Mengambil Semua Proposal
+- **Endpoint:** `GET /proposals`
+- **Deskripsi:** Menampilkan daftar proposal yang sesuai dengan role dan divisi dari user yang melakukan request (contoh: Finance melihat proposalnya sendiri di divisinya, Manager melihat semua proposal di divisinya).
+
+#### Membuat Proposal Baru
+- **Endpoint:** `POST /proposals`
+- **Body Request:**
+  ```json
+  {
+      "title": "Pengadaan Laptop",
+      "description": "Pengajuan pengadaan laptop untuk tim developer divisi terkait."
+  }
+  ```
+- **Deskripsi:** Membuat pengajuan proposal baru. Nilai `user_id` dan `division_id` tidak perlu dikirim karena otomatis terambil dari token/user login. 
+
+#### Menyetujui Proposal
+- **Endpoint:** `PUT /proposals/{proposal}/approve`
+- **Parameter:** `{proposal}` diganti dengan ID proposal (contoh: `/proposals/1/approve`).
+- **Deskripsi:** Menyetujui (approve) sebuah proposal. Endpoint ini hanya bisa diakses oleh user dengan role **Manager**.

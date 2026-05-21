@@ -1,20 +1,9 @@
-<!DOCTYPE html>
-<html lang="id" class="h-full">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Sistem Proposal Perusahaan - PT Karunia Mitra Bersama">
-    <title>@yield('title', 'Sistem Proposal') | PT Karunia Mitra Bersama</title>
+@extends('layouts.app')
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+@section('title', 'Dashboard')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="h-full font-['Inter',sans-serif] antialiased">
-    <div class="min-h-screen bg-gray-50 flex">
+@section('content')
+<div class="min-h-screen bg-gray-50 flex">
 
     {{-- ===== SIDEBAR ===== --}}
     <aside class="flex-shrink-0 w-60 bg-white border-r border-gray-200 flex flex-col">
@@ -31,32 +20,57 @@
                 <p class="text-gray-400 text-xs">PT KMB</p>
             </div>
         </div>
-    <nav class="flex-1 px-3 py-4 space-y-0.5">
-        <a href="{{ route('web.dashboard') }}" id="nav-dashboard"
-        class="nav-item group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
-                {{ request()->routeIs('web.dashboard') 
-                    ? 'bg-blue-50 text-blue-700 border border-blue-100' 
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-transparent' }}">
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-            </svg>
-            Dashboard
-        </a>
 
+        {{-- Navigation --}}
+        <nav class="flex-1 px-3 py-4 space-y-0.5">
 
-        @if(auth()->user()->hasRole('Finance'))
-        <a href="{{ route('web.proposal') }}" id="nav-proposal"
-        class="nav-item group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
-                {{ request()->routeIs('web.proposal*') 
-                    ? 'bg-blue-50 text-blue-700 border border-blue-100' 
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-transparent' }}">
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            Proposal
-        </a>
+            {{-- Dashboard --}}
+            <a href="{{ route('web.dashboard') }}" id="nav-dashboard"
+               class="nav-item group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
+                      bg-blue-50 text-blue-700 border border-blue-100">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                Dashboard
+            </a>
 
-        @endif
+            {{-- Proposal --}}
+            <a href="#" id="nav-proposal"
+               class="nav-item group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
+                      text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Proposal
+                @if($stats['total'] > 0)
+                    <span class="ml-auto text-xs font-semibold bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">
+                        {{ $stats['total'] }}
+                    </span>
+                @endif
+            </a>
+
+        </nav>
+
+        {{-- User info bottom --}}
+        <div class="px-4 py-4 border-t border-gray-100">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                    {{ strtoupper(substr($user->name ?? 'A', 0, 1)) }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-gray-800 text-xs font-semibold truncate">{{ $user->name ?? 'Admin' }}</p>
+                    <p class="text-gray-400 text-xs truncate">
+                        @if($user->hasRole('Manager'))
+                            Manager
+                        @elseif($user->hasRole('Finance'))
+                            Finance
+                        @else
+                            {{ $user->division->name ?? 'Staff' }}
+                        @endif
+                    </p>
+                </div>
+            </div>
+        </div>
     </aside>
 
     {{-- ===== MAIN CONTENT ===== --}}
@@ -79,8 +93,13 @@
             </form>
         </header>
 
+        {{-- Page Content --}}
         <main class="flex-1 overflow-y-auto p-6 space-y-6">
+
                 @yield('content')
+
+           
+
         </main>
     </div>
 </div>
@@ -124,6 +143,4 @@
         });
     });
 </script>
-    
-</body>
-</html>
+@endsection

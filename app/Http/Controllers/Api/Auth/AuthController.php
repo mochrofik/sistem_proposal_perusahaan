@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Auth;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
@@ -14,16 +15,11 @@ class AuthController extends Controller
     ) {}
 
     /**
-     * POST /api/auth/login
-     *
-     * Authenticate the user and return a Sanctum API token.
-     *
-     * @param  LoginRequest  $request
-     * @return JsonResponse
+     * Authenticate the user and return a Sanctum Bearer token.
      */
     public function login(LoginRequest $request): JsonResponse
     {
-        $result = $this->authService->login(
+        $result = $this->authService->loginApi(
             credentials: $request->only('email', 'password'),
             deviceName:  $request->input('device_name', $request->userAgent() ?? 'api-token'),
         );
@@ -43,17 +39,10 @@ class AuthController extends Controller
         ], 200);
     }
 
-    /**
-     * POST /api/auth/logout
-     *
-     * Revoke the current user's access token.
-     *
-     * @param  Request  $request
-     * @return JsonResponse
-     */
+  
     public function logout(Request $request): JsonResponse
     {
-        $this->authService->logout($request->user());
+        $this->authService->logoutApi($request->user());
 
         return response()->json([
             'success' => true,
@@ -62,12 +51,9 @@ class AuthController extends Controller
     }
 
     /**
-     * GET /api/auth/me
      *
      * Return the currently authenticated user's profile.
-     *
-     * @param  Request  $request
-     * @return JsonResponse
+     * Requires: Authorization: Bearer <token>
      */
     public function me(Request $request): JsonResponse
     {

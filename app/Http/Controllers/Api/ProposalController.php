@@ -8,7 +8,7 @@ use App\Models\Proposal;
 
 class ProposalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
         $query = Proposal::with(['user', 'division']);
@@ -17,7 +17,7 @@ class ProposalController extends Controller
             $query->where('user_id', $user->id)
                   ->where('division_id', $user->division_id);
         } else if ($user->hasRole('Manager')) {
-            $query->where('division_id', $user->division_id);
+
         }
 
         $proposals = $query->latest()->get();

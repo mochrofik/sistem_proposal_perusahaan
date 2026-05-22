@@ -14,10 +14,12 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="h-full font-['Inter',sans-serif] antialiased">
-    <div class="min-h-screen bg-gray-50 flex">
+    <div class="min-h-screen bg-gray-50 flex overflow-hidden">
 
     {{-- ===== SIDEBAR ===== --}}
-    <aside class="flex-shrink-0 w-60 bg-white border-r border-gray-200 flex flex-col">
+
+
+    <aside id="sidebar" class="w-60 fixed inset-y-0 left-0 z-50 bg-white shadow-xl transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0">
 
         {{-- Logo --}}
         <div class="flex items-center gap-3 px-5 py-5 border-b border-gray-100">
@@ -31,32 +33,33 @@
                 <p class="text-gray-400 text-xs">PT KMB</p>
             </div>
         </div>
-    <nav class="flex-1 px-3 py-4 space-y-0.5">
-        <a href="{{ route('web.dashboard') }}" id="nav-dashboard"
-        class="nav-item group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
-                {{ request()->routeIs('web.dashboard') 
-                    ? 'bg-blue-50 text-blue-700 border border-blue-100' 
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-transparent' }}">
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-            </svg>
-            Dashboard
-        </a>
+        <nav class="flex-1 px-3 py-4 space-y-0.5 " id="sidebar">
+            <a href="{{ route('web.dashboard') }}" id="nav-dashboard"
+            class="nav-item group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
+                    {{ request()->routeIs('web.dashboard') 
+                        ? 'bg-blue-50 text-blue-700 border border-blue-100' 
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-transparent' }}">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                Dashboard
+            </a>
 
 
-        @if(auth()->user()->hasRole('Finance'))
-        <a href="{{ route('web.proposal') }}" id="nav-proposal"
-        class="nav-item group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
-                {{ request()->routeIs('web.proposal*') 
-                    ? 'bg-blue-50 text-blue-700 border border-blue-100' 
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-transparent' }}">
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            Proposal
-        </a>
+            @if(auth()->user()->hasRole('Finance'))
+            <a href="{{ route('web.proposal') }}" id="nav-proposal"
+            class="nav-item group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
+                    {{ request()->routeIs('web.proposal*') 
+                        ? 'bg-blue-50 text-blue-700 border border-blue-100' 
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-transparent' }}">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Proposal
+            </a>
 
-        @endif
+            @endif
+        </nav>
     </aside>
 
     {{-- ===== MAIN CONTENT ===== --}}
@@ -66,17 +69,40 @@
         <header class="flex-shrink-0 h-14 bg-white border-b border-gray-200 flex items-center justify-between px-6">
             <div>
                 <h1 class="text-gray-900 font-semibold text-base">Dashboard</h1>
+                
             </div>
-            <form method="POST" action="{{ route('web.logout') }}">
-                @csrf
-                <button type="submit" id="btn-logout"
-                    class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 px-3 py-1.5 rounded-lg transition-all duration-150 font-medium">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                    </svg>
-                    Keluar
-                </button>
-            </form>
+            
+            <div class="flex flex-row items-center gap-3">
+                 <button 
+                    id="btn-toggle-sidebar"
+                        type="button" 
+                        class="inline-flex md:hidden items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-colors"
+                        aria-label="Buka menu"
+                        >
+                        <svg 
+                            class="w-7 h-7" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24" 
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 18h16"></path>
+                        </svg>
+                    </button>
+                <form method="POST" action="{{ route('web.logout') }}">
+                    @csrf
+                    <button type="submit" id="btn-logout"
+                        class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 px-3 py-1.5 rounded-lg transition-all duration-150 font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                        Keluar
+                    </button>
+                </form>
+            </div>
+
         </header>
 
         <main class="flex-1 overflow-y-auto p-6 space-y-6">
@@ -123,6 +149,13 @@
             this.classList.remove('text-gray-600', 'hover:bg-gray-100', 'hover:text-gray-900');
         });
     });
+
+    document.getElementById('btn-toggle-sidebar').addEventListener('click', function () {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('-translate-x-full');
+    });
+
+    docu
 </script>
     
 </body>
